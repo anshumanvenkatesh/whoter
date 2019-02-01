@@ -1,0 +1,27 @@
+{
+  "name": "whoter",
+  "version": "1.0.0",
+  "description": "Splitwise extension to calculate water fetching metrics",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anshumanvenkatesh/whoter.git"
+  },
+  "keywords": [
+    "splitwise",
+    "api",
+    "pet-project"
+  ],
+  "author": "jgr0",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anshumanvenkatesh/whoter/issues"
+  },
+  "homepage": "https://github.com/anshumanvenkatesh/whoter#readme",
+  "dependencies": {
+    "oauth": "^0.9.15"
+  }
+}
