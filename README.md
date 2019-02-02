@@ -1,1 +1,2 @@
-Project to track water fetching from splitwise
+## Who filled my water
+Heroku app that tracks who filled water for the apartment from splitwise description
