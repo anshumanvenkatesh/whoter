@@ -24,9 +24,9 @@
   "homepage": "https://github.com/anshumanvenkatesh/whoter#readme",
   "dependencies": {
     "oauth": "^0.9.15",
-    "ramda": "^0.26.1"
+    "ramda": "^0.26.1",
+    "dotenv": "^6.2.0"
   },
   "devDependencies": {
-    "dotenv": "^6.2.0"
   }
 }
