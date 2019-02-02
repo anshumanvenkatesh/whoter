@@ -12,7 +12,7 @@ const CONSUMER_SECRET = process.env.CONSUMER_SECRET
 
 const TOKEN_URL = '/oauth/token'
 const AUTHORIZE_URL = '/oauth/authorize'
-const MY_CALLBACK_URL = 'http://localhost:8080/callback'
+const MY_CALLBACK_URL = 'https://whoter.herokuapp.com/callback'
 const BASE_SITE = 'https://www.splitwise.com'
 
 var authURL;
