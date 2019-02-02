@@ -4,6 +4,7 @@ const {
 } = require('child_process')
 const qs = require('querystring')
 const http = require('http')
+const R = require('ramda')
 
 const CONSUMER_KEY = "nYehhQF2rj8cFPdkmaCdvrplaBmc4DbXC6UhzLIr"
 const CONSUMER_SECRET = "LEenXq5mpjP9MzrEMGDWqVQAg61PLYuSdw9hRxBY"
@@ -23,6 +24,11 @@ const client = new OAuth.OAuth2(
   TOKEN_URL,
   null
 )
+
+GROUP_ID = 7727992 // ASU Roomates Group ID
+DATED_AFTER = 20190105 // 1st Jan 2019
+
+var ACCESS_TOKEN = '';
 
 const server = http.createServer(function (req, res) {
   console.log(req.url);
@@ -102,11 +108,68 @@ const callback = (req, res) => {
         res.end(JSON.stringify(results));
       } else {
         console.log('Obtained access_token: ', access_token);
-        client.get('https://secure.splitwise.com/api/v3.0/get_current_user', access_token, function (e, data, response) {
-          console.log('atleast here??');
+        console.log('Obtained refresh_token: ', refresh_token);
+        ACCESS_TOKEN = access_token
+        const get_expense_url = `https://secure.splitwise.com/api/v3.0/get_expenses?group_id=${GROUP_ID}&dated_after=${DATED_AFTER}&limit=1000`
+        console.log("url: ", get_expense_url)
+        client.get(get_expense_url, access_token, function (e, data, response) {
+          // console.log('data:',  data);
+          
+          const expenses = JSON.parse(data).expenses
+          // console.log('user data: ', expenses);
+          // console.log('user data raw: ', JSON.parse(data).expenses);
+          
+          const waterExpenses = R.filter(
+            R.where({
+              description: x => R.contains("water", x.toLowerCase())
+            }), expenses
+          )
+          const reqdArr = R.map(R.pick(['id', 'description', 'created_at']), waterExpenses)
+          const filledData = {
+            'r': {name: "Raj", count:0, lastFilled: null, rawData: []},
+            'a': {name: "Anshu", count:0, lastFilled: null, rawData: []},
+            'h': {name: "Hari", count:0, lastFilled: null, rawData: []},
+            'v': {name: "VJ", count:0, lastFilled: null, rawData: []},
+          }
+          
+          // Update fill count
+          R.map(x =>  {
+            const names = R.pipe(
+              R.split(";"),
+              R.last,
+              R.trim,
+              R.map(R.toLower),
+              R.map(_x => {
+                console.log("_x: ", _x)
+                console.log("x: ", x)
+                filledData[_x]["count"] += 1
+                filledData[_x]["rawData"].push(x)
+              })
+            )(x.description)
+          }, reqdArr)
 
+          // Update lastFilled
+          R.map(
+            x => {
+              R.pipe(
+                R.split(";"),
+                R.last,
+                R.trim,
+                R.map(R.toLower),
+                R.map(y => {
+                  console.log("y: ", y)
+                  if (!(filledData[y]["lastFilled"]))
+                    filledData[y]["lastFilled"] = filledData[y]["rawData"][0]["created_at"]
+                    delete filledData[y]["rawData"]
+                })
+              )(x.description)
+            }
+          )(reqdArr)
+
+          console.log('\n\n\n\nwater expenses: ', reqdArr)
+          res.end(JSON.stringify(filledData))
           if (e) console.error(e);
-          res.end(data);
+          res.end(expenses);
         });
       }
     });
