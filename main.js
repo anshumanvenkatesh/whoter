@@ -55,13 +55,15 @@ const server = http.createServer(function (req, res) {
     // Unhandled url
   }
 });
+
+const PORT = process.env.PORT || 8080
 server.listen({
-  port: 8080
+  port: PORT
 }, serverReady);
 
 function serverReady() {
   console.log(`Server on port ${server.address().port} is now up`);
-  exec(`open http://localhost:8080/`, (err, stdout, stderr) => {
+  exec(`open http://localhost:${PORT}/`, (err, stdout, stderr) => {
     if (err) {
       // node couldn't execute the command
       return;
