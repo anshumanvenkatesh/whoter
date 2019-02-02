@@ -1,3 +1,4 @@
+require('dotenv').config()
 const OAuth = require('oauth')
 const {
   exec
@@ -6,8 +7,8 @@ const qs = require('querystring')
 const http = require('http')
 const R = require('ramda')
 
-const CONSUMER_KEY = "nYehhQF2rj8cFPdkmaCdvrplaBmc4DbXC6UhzLIr"
-const CONSUMER_SECRET = "LEenXq5mpjP9MzrEMGDWqVQAg61PLYuSdw9hRxBY"
+const CONSUMER_KEY = process.env.CONSUMER_KEY
+const CONSUMER_SECRET = process.env.CONSUMER_SECRET
 
 const TOKEN_URL = '/oauth/token'
 const AUTHORIZE_URL = '/oauth/authorize'
