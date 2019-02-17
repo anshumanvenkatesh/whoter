@@ -25,25 +25,15 @@ const client = new OAuth.OAuth2(
   null
 );
 const server = http.createServer(function (req, res) {
-  console.log(req.url);
-    const p = req.url.split('/');
-    console.log("p: ", p);
-  console.log('at the base');
-
-    const pLen = p.length;
-
-    authURL = client.getAuthorizeUrl({
-    redirect_uri: MY_CALLBACK_URL,
-    response_type: 'code'
-  });
-
+  console.log("At the server base");
+  const p = req.url.split('/');
+  const pLen = p.length;
   if (pLen === 2 && p[1] === '') {
-    routes.basepage(req, res, authURL);
+    routes.basepage(req, res, client);
   } else if (pLen === 2 && p[1].indexOf('callback') === 0) {
     routes.callback(req, res, client);
-
-  } else if (pLen === 2 && p[1] === 'check'){
-
+  } else if (pLen === 2 && p[1] === 'check') {
+    routes.check(req, res, client);
   } else {
     console.log('Unhandled URL');
     res.end("Hello")
@@ -51,7 +41,7 @@ const server = http.createServer(function (req, res) {
   }
 });
 
-const PORT = process.env.PORT || 8080
+const PORT = process.env.PORT || 8080;
 server.listen({
   port: PORT
 }, serverReady);

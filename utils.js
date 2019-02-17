@@ -6,6 +6,7 @@
 const R = require('ramda');
 const Promise = require("bluebird");
 
+
 const getIndividuals = R.pipe(
   R.split(";"),
   R.last,
@@ -15,6 +16,7 @@ const getIndividuals = R.pipe(
 
 const getExpenses = (client, get_expense_url, access_token) => {
     return new Promise((resolve, reject) => {
+      console.log("access token: ", access_token);
       client.get(get_expense_url, access_token, function (e, data) {
         if (e) reject(e);
         const waterExpenses = R.filter(
@@ -24,10 +26,10 @@ const getExpenses = (client, get_expense_url, access_token) => {
         );
         const reqdArr = R.map(R.pick(['id', 'description', 'created_at']), waterExpenses);
         const filledData = {
-          'r': {name: "Raj", count:0, lastFilled: null, rawData: []},
-          'a': {name: "Anshu", count:0, lastFilled: null, rawData: []},
-          'h': {name: "Hari", count:0, lastFilled: null, rawData: []},
-          'v': {name: "VJ", count:0, lastFilled: null, rawData: []},
+          'r': {name: "Raj", count: 0, lastFilled: null, rawData: []},
+          'a': {name: "Anshu", count: 0, lastFilled: null, rawData: []},
+          'h': {name: "Hari", count: 0, lastFilled: null, rawData: []},
+          'v': {name: "VJ", count: 0, lastFilled: null, rawData: []},
         };
         
         // Update fill count of filledData
@@ -63,5 +65,5 @@ const getExpenses = (client, get_expense_url, access_token) => {
   };
 
   module.exports = {
-      getExpenses
+      getExpenses,
   };
