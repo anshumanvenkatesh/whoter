@@ -3,23 +3,25 @@
 * author: jgr0
 */
 
-const R = require('ramda')
+const R = require('ramda');
 const Promise = require("bluebird");
+
+const getIndividuals = R.pipe(
+  R.split(";"),
+  R.last,
+  R.trim,
+  R.map(R.toLower)
+);
 
 const getExpenses = (client, get_expense_url, access_token) => {
     return new Promise((resolve, reject) => {
       client.get(get_expense_url, access_token, function (e, data) {
-        // console.log('data:',  data);
         if (e) reject(e);
-        const expenses = JSON.parse(data).expenses;
-        // console.log('user data: ', expenses);
-        // console.log('user data raw: ', JSON.parse(data).expenses);
-        
         const waterExpenses = R.filter(
           R.where({
             description: x => R.includes("water", x.toLowerCase())
-          }), expenses
-        )
+          }), JSON.parse(data).expenses
+        );
         const reqdArr = R.map(R.pick(['id', 'description', 'created_at']), waterExpenses);
         const filledData = {
           'r': {name: "Raj", count:0, lastFilled: null, rawData: []},
@@ -28,16 +30,11 @@ const getExpenses = (client, get_expense_url, access_token) => {
           'v': {name: "VJ", count:0, lastFilled: null, rawData: []},
         };
         
-        // Update fill count
+        // Update fill count of filledData
         R.map(x =>  {
           const names = R.pipe(
-            R.split(";"),
-            R.last,
-            R.trim,
-            R.map(R.toLower),
+            getIndividuals,
             R.map(_x => {
-              console.log("_x: ", _x);
-              console.log("x: ", x);
               filledData[_x]["count"] += 1;
               filledData[_x]["rawData"].push(x)
             })
@@ -46,14 +43,10 @@ const getExpenses = (client, get_expense_url, access_token) => {
     
         // Update lastFilled
         R.map(
-          x => { 
+          x => {
             R.pipe(
-              R.split(";"),
-              R.last,
-              R.trim,
-              R.map(R.toLower),
+              getIndividuals,
               R.map(y => {
-                console.log("y: ", y);
                 if (!(filledData[y]["lastFilled"]))
                   filledData[y]["lastFilled"] = filledData[y]["rawData"][0]["created_at"];
                   delete filledData[y]["rawData"]
@@ -62,10 +55,8 @@ const getExpenses = (client, get_expense_url, access_token) => {
           }
         )(reqdArr);
 
-        console.log('\n\n\n\nwater expenses: ', reqdArr);
+        console.log('\n\nwater expenses: ', reqdArr);
         resolve(JSON.stringify(R.values(filledData)));
-
-        // resolve(expenses);
       });
     })
     
